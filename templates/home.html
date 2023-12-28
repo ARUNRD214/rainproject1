@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>WELCOME to this site</h1>
+    <div class="data">
+    <form action="{{url_for('prediction')}}" method="post">
+        <input type="text" name="MinTemp"  placeholder="Min temp" required="required"><br>
+        <input type="text" name="MaxTemp" placeholder="Min temp" required="required"><br>
+        <input type="text" name="Rainfall" placeholder="Min temp" required="required"><br>
+        <input type="text" name="Humidity9am" placeholder="Min temp" required="required"><br>
+        <input type="text" name="Humidity3pm" placeholder="Min temp" required="required"><br>
+        <input type="text" name="Temp9am" placeholder="Min temp" required="required"><br>
+        <input type="text" name="Temp3pm" placeholder="Min temp" required="required"><br>
+        <input type="text" name="RainToday" placeholder="Min temp" required="required"><br>
+        <button type="submit">Predict</button>
+    </form>
+</div>
+<br>
+<br>
+{{prediction_text}}
+</body>
+</html>
