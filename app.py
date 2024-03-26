@@ -27,5 +27,7 @@ def prediction():
     else:
         return jsonify({"prediction": "Tomorrow will be a RAINY DAY"})
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+# No need to run the server directly in this script
+
+# Note: You may want to add error handling for loading the model and scaler
+
