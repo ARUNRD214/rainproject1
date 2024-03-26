@@ -1,31 +1,55 @@
-from flask import Flask, request, jsonify
-import numpy as np
-import pickle
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rain Prediction</title>
+</head>
+<body>
+    <div>
+        <h1>Rain Prediction</h1>
+        <p id="prediction">Waiting for prediction...</p>
+    </div>
 
-app = Flask(__name__)
-model = None  # Load your model
-sc = None  # Load your scaler
+    <script>
+        function updatePrediction(prediction) {
+            document.getElementById("prediction").innerText = prediction;
+        }
 
-@app.route('/prediction', methods=['POST'])
-def prediction():
-    # Extract sensor data from JSON payload
-    sensor_data = request.json
-    temperature = sensor_data['temperature']
-    humidity = sensor_data['humidity']
-    moisture = sensor_data['moisture']
+        function sendSensorData() {
+            // Read sensor data from Arduino
+            var temperature = /* Your code to read temperature from sensor */;
+            var humidity = /* Your code to read humidity from sensor */;
+            var moisture = /* Your code to read moisture from sensor */;
 
-    # Modify this part to match the required input format for your model
-    model_input = np.array([temperature, temperature, 0, humidity, humidity, temperature, temperature, 0]).reshape(1, -1)
-    final_input = sc.transform(model_input)
+            // Create sensor data object
+            var sensorData = {
+                temperature: temperature,
+                humidity: humidity,
+                moisture: moisture
+            };
 
-    # Make prediction
-    output = model.predict(final_input)[0]
+            // Send sensor data to Flask server for prediction
+            fetch('/prediction', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(sensorData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                updatePrediction(data.prediction);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
 
-    # Return prediction result as JSON
-    if output == 0:
-        return jsonify({"prediction": "Tomorrow will be a SUNNY DAY"})
-    else:
-        return jsonify({"prediction": "Tomorrow will be a RAINY DAY"})
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+        // Call sendSensorData function on page load
+        window.onload = function() {
+            sendSensorData();
+        };
+    </script>
+</body>
+</html>
