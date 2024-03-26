@@ -1,55 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="templates/style.css" method="post">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>Rain Prediction</title>
 </head>
-<body>
-    <div>
-        <h1>Rain Prediction</h1>
-        <p id="prediction">Waiting for prediction...</p>
+<body background="rain.jpg">
+    <!-- <b><h1>RAIN PREDICTION</h1></b> -->
+    <div class="datas">
+        <b><h1>RAIN PREDICTION</h1></b>
+        <form action="{{url_for('prediction')}}" method="post">
+        <div>
+            <label for="data1">Minimum temperature of the day</label>
+            <input type="text" name="MinTemp"  placeholder="Min temp" required="required">
+        </div>
+        <br>
+        <div>
+            <label for="data2">Maximum temperature of the day</label>
+            <input type="text" name="MaxTemp" placeholder="Max temp" required="required">
+        </div>
+        <br>
+        <div>
+            <label for="data3">Rainfall rate</label>
+            <input type="text" name="Rainfall" placeholder="Rain" required="required">
+        </div>
+        <br>
+           <div>
+            <label for="data2">Humidity at 9 AM</label>
+            <input type="text" name="Humidity9am" placeholder="Humidity 1" required="required">
+           </div><br>
+            <div>
+            <label for="data2">Humidity at 3 PM</label>
+            <input type="text" name="Humidity3pm" placeholder="Humidity 2" required="required">
+             </div><br>
+            <div>
+            <label for="data2">Temperature at 9 AM</label>
+            <input type="text" name="Temp9am" placeholder="Temperature 1" required="required">
+            </div><br>
+            <div>
+            <label for="data2">Temperature at 3 PM</label>
+            <input type="text" name="Temp3pm"   placeholder="Temperature 2" required="required">
+            </div><br>
+            <div>
+            <label for="data2">Today Rainy or not</label>
+            <input type="text" name="RainToday" placeholder="enter 1 if rain or 0 if not" required="required">
+             </div><br>
+            <div class="result">
+            <button type="submit">Predict</button>
+            </div>
+        </form>
     </div>
-
-    <script>
-        function updatePrediction(prediction) {
-            document.getElementById("prediction").innerText = prediction;
-        }
-
-        function sendSensorData() {
-            // Read sensor data from Arduino
-            var temperature = /* Your code to read temperature from sensor */;
-            var humidity = /* Your code to read humidity from sensor */;
-            var moisture = /* Your code to read moisture from sensor */;
-
-            // Create sensor data object
-            var sensorData = {
-                temperature: temperature,
-                humidity: humidity,
-                moisture: moisture
-            };
-
-            // Send sensor data to Flask server for prediction
-            fetch('/prediction', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(sensorData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                updatePrediction(data.prediction);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        }
-
-        // Call sendSensorData function on page load
-        window.onload = function() {
-            sendSensorData();
-        };
-    </script>
+    {{prediction_text}}
 </body>
 </html>
