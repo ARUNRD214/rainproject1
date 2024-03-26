@@ -1,33 +1,43 @@
-from flask import Flask, request, jsonify
-import numpy as np
 import pickle
+from flask import Flask,request,app,jsonify,url_for,render_template
+import numpy as np
+import pandas as pd 
+app=Flask(__name__)
+model=pickle.load(open('classifymodel.pkl','rb'))
+sc=pickle.load(open('scaling.pkl','rb'))
+@app.route('/')
+def home():
+    return render_template('home1.html')
 
-app = Flask(__name__)
-model = None  # Load your model
-sc = None  # Load your scaler
+@app.route('/predict_api',methods=['POST'])
+def predict_api():
+    data=request.json['data']
+    #data_list=list(data.values())
+    print(data)
+    print(np.array(list(data.values())).reshape(1,-1))
+    new_data=sc.transform(np.array(list(data.values())).reshape(1,-1))
+    output=model.predict(new_data)
+    print(output[0])
+    a='\U0001F603'
 
-@app.route('/prediction', methods=['POST'])
-def prediction():
-    # Extract sensor data from JSON payload
-    sensor_data = request.json
-    temperature = sensor_data['temperature']
-    humidity = sensor_data['humidity']
-    moisture = sensor_data['moisture']
-
-    # Modify this part to match the required input format for your model
-    model_input = np.array([temperature, temperature, 0, humidity, humidity, temperature, temperature, 0]).reshape(1, -1)
-    final_input = sc.transform(model_input)
-
-    # Make prediction
-    output = model.predict(final_input)[0]
-
-    # Return prediction result as JSON
-    if output == 0:
-        return jsonify({"prediction": "Tomorrow will be a SUNNY DAY"})
+    return jsonify(int(output[0]))
+    """if(output==0):
+        return jsonify("Tomorrow will be a SUNNY Day"+a)
     else:
-        return jsonify({"prediction": "Tomorrow will be a RAINY DAY"})
+        return jsonify("Tomorrow will be a RAINY day"+a)"""
 
-# No need to run the server directly in this script
+@app.route('/prediction',methods=['POST'])
+def prediction():
+    data=[float(x)for x in request.form.values()]
+    final_input=sc.transform(np.array(data).reshape(1,-1))
+    print(final_input)
+    output=model.predict(final_input)[0]
+    if(output==0):
+       return render_template("home1.html",prediction_text="Tomorrow will be a SUNNYDAY")
+    else:
+        return render_template("home1.html",prediction_text="Tomorrow will be a RAINY DAY")
+    
 
-# Note: You may want to add error handling for loading the model and scaler
-
+    
+if __name__=="__main__":
+    app.run(debug=True)
